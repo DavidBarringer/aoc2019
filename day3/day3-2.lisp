@@ -1,0 +1,32 @@
+(defun check (sum coord l)
+  (cond ((AND (< (CAAR l) (CAR coord)) (> (CAADR l) (CAR coord)) (= (CDAR l) (CDR coord)))
+        (+ sum (abs (- (CAAR l) (CAR coord)))))
+      ((AND (> (CAAR l) (CAR coord)) (< (CAADR l) (CAR coord)) (= (CDAR l) (CDR coord)))
+        (+ sum (abs (- (CAAR l) (CAR coord)))))
+      ((AND (> (CDAR l) (CDR coord)) (< (CDADR l) (CDR coord)) (= (CAAR l) (CAR coord)))
+        (+ sum (abs (- (CDAR l) (CDR coord)))))
+      ((AND (< (CDAR l) (CDR coord)) (> (CDADR l) (CDR coord)) (= (CAAR l) (CAR coord)))
+        (+ sum (abs (- (CDAR l) (CDR coord)))))
+))
+
+(defun getSum (sum coord l)
+  (if (= (list-length l) 1) (print "BIG ERROR")
+    (if (null (check sum coord l))
+      (getSum (+ sum (+ (abs(- (CAAR l) (CAADR l))) (abs(- (CDAR l) (CDADR l))))) coord (CDR l))
+      (check sum coord l)
+    )
+  )
+)
+
+(defun sumlist (crosslist l res)
+  (if (null crosslist) res
+    (sumlist (CDR crosslist) l (append res (list (getsum 0 (CAR crosslist) l))))
+  )
+)
+
+(defun run2 ()
+  (load "day3/day3-1.lisp")
+  (apply `min (mapcar `+
+  (sumlist (checkcrossing (coord (CAR (getWires)) `((0 . 0))) (coord (CADR (getWires)) `((0 . 0))) ()) (coord (CADR (getWires)) `((0 . 0))) ())
+  (sumlist (checkcrossing (coord (CAR (getWires)) `((0 . 0))) (coord (CADR (getWires)) `((0 . 0))) ()) (coord (CAR (getWires)) `((0 . 0))) ())))
+)

@@ -31,7 +31,7 @@
 )
 
 (defun makelist ()
-  (loop for i from 0 for j in (CAR (cl-csv:read-csv #P"data2.csv")) collect (parse-integer j))
+  (loop for i from 0 for j in (CAR (cl-csv:read-csv #P"day2/data2.csv")) collect (parse-integer j))
 )
 
 (defun run ()
