@@ -43,9 +43,9 @@
   (setf l (makelist))
   (loop for i from 0 to 99
     do(loop for j from 0 to 99
+      if (= 19690720 (CAR (run 0 (newlist l i j))))
       do(
-        if (= 19690720 (CAR (run 0 (newlist l i j))))
-        (print (+ j (* 100 i)))
+        print (+ j (* 100 i))
       )
     )
   )
