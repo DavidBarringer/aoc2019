@@ -1,9 +1,20 @@
-(defun range (x y)
-  (loop for i from (parse-integer x) to (parse-integer y) collect (numbertolist i))
+(defun number-sequence (s e)
+  (loop for i from s to e collect (list i))
 )
 
-(defun numbertolist (n)
-  (loop for c across (write-to-string n) collect (digit-char-p c))
+(defun generate (l x)
+  (if (= l 1) (number-sequence x 9)
+    (loop for i from x to 9 append (
+      loop for d in (generate (- l 1) i) collect (cons i d)))
+  )
+)
+
+(defun tonum (l)
+  (parse-integer (format nil "~{~A~}" l))
+)
+
+(defun inrange (c r)
+  (AND (> (tonum c) (parse-integer (CAAR r))) (< (tonum c) (parse-integer (CADAR r))))
 )
 
 (defun consecutive (x tot)
@@ -14,5 +25,5 @@
 
 (defun run ()
   (setf r (cl-csv:read-csv #P"day4/data4.csv"))
-  (loop for c in (range (CAAR r) (CADAR r)) count (if (AND (apply `<= c) (find `1 (consecutive c 1) :test `<)) c))
+  (loop for c in (generate (length (CADAR r)) 1) count (if (AND (apply `<= c) (find `1 (consecutive c 1) :test `<) (inrange c r)) c))
 )
