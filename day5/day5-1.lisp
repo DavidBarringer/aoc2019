@@ -5,13 +5,8 @@
 (defun operate (op v x y)
   (cond ((= op 1) (incf p 4)(store (+ x y) (CADDDR v)))
         ((= op 2) (incf p 4)(store (* x y) (CADDDR v)))
-        ((= op 3) (incf p 2)(input (CADR v)))
-        ((= op 4) (incf p 2)(output x)))
-)
-
-(defun input (pos)
-  (setq i (read))
-  (store i pos)
+        ((= op 3) (incf p 2) (setq i (read)) (store i (CADR v)))
+        ((= op 4) (incf p 2) (push x outputbuffer) (intcode)))
 )
 
 (defun immediatecheck (v x pos)
@@ -26,18 +21,13 @@
   (setq instruction (numtolist (CAR v)))
   (loop for i from (list-length instruction) to 5 do(push 0 instruction))
   (setq op (tonum (remove 0 (last instruction 2) :test `=)))
-  (setq x (immediatecheck v (= 0 (CAR (nthcdr 2 (reverse instruction)))) 1))
-  (setq y (immediatecheck v (= 0 (CAR (nthcdr 3 (reverse instruction)))) 2))
+  (setq x (immediatecheck v (= 0 (CADDR (reverse instruction))) 1))
+  (setq y (immediatecheck v (= 0 (CADDDR (reverse instruction))) 2))
   (operate op v x y)
 )
 
 (defun numtolist (n)
   (loop for c across (write-to-string n) collect (digit-char-p c))
-)
-
-(defun output (x)
-  (push x outputbuffer)
-  (intcode)
 )
 
 (defun store (x loc)
