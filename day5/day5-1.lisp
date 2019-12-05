@@ -1,18 +1,17 @@
 (defvar outputbuffer)
 (defvar l)
+(defvar p)
 
-(defun operate (p op v x y)
-  (cond ((= op 1) (store (+ p 4) (+ x y) (CADDDR v)))
-        ((= op 2) (store (+ p 4) (* x y) (CADDDR v)))
-        ((= op 3) (input (+ p 2) (CADR v)))
-        ((= op 4) (output (+ p 2) x))
-        ((= op 99) (store p nil nil))
-  )
+(defun operate (op v x y)
+  (cond ((= op 1) (incf p 4)(store (+ x y) (CADDDR v)))
+        ((= op 2) (incf p 4)(store (* x y) (CADDDR v)))
+        ((= op 3) (incf p 2)(input (CADR v)))
+        ((= op 4) (incf p 2)(output x)))
 )
 
-(defun input (p pos)
+(defun input (pos)
   (setq i (read))
-  (store p i pos)
+  (store i pos)
 )
 
 (defun immediatecheck (v x pos)
@@ -23,44 +22,41 @@
   (parse-integer (format nil "~{~A~}" x))
 )
 
-(defun immediatetoop (p v)
+(defun immediatetoop (v)
   (setq instruction (numtolist (CAR v)))
   (loop for i from (list-length instruction) to 5 do(push 0 instruction))
   (setq op (tonum (remove 0 (last instruction 2) :test `=)))
   (setq x (immediatecheck v (= 0 (CAR (nthcdr 2 (reverse instruction)))) 1))
   (setq y (immediatecheck v (= 0 (CAR (nthcdr 3 (reverse instruction)))) 2))
-  (operate p op v x y)
+  (operate op v x y)
 )
 
 (defun numtolist (n)
   (loop for c across (write-to-string n) collect (digit-char-p c))
 )
 
-(defun output (p x)
+(defun output (x)
   (push x outputbuffer)
-  (intcode p)
+  (intcode)
 )
 
-(defun store (p x loc)
-  (if (null loc) l (store2 p x loc))
-)
-
-(defun store2 (p x loc)
-  (setf (nth loc l) x)
-  (intcode p)
+(defun store (x loc)
+  (cond ((null loc) l)
+        (t (setf (nth loc l) x) (intcode)))
 )
 
 (defun loc (x)
   (if (null x) nil (CAR (nthcdr x l)))
 )
 
-(defun intcode (p)
-  (if (> p (list-length l)) l (immediatetoop p (nthcdr p l)))
+(defun intcode ()
+  (if (> p (list-length l)) l (immediatetoop (nthcdr p l)))
 )
 
 (defun run ()
   (setq outputbuffer `())
+  (setq p 0)
   (setq l (loop for j in (CAR (cl-csv:read-csv #P"day5/data5.csv")) collect (parse-integer j)))
-  (intcode 0)
+  (intcode)
   (reverse outputbuffer)
 )
