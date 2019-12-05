@@ -6,7 +6,8 @@
   (cond ((= op 1) (incf p 4)(store (+ x y) (CADDDR v)))
         ((= op 2) (incf p 4)(store (* x y) (CADDDR v)))
         ((= op 3) (incf p 2) (setq i (read)) (store i (CADR v)))
-        ((= op 4) (incf p 2) (push x outputbuffer) (intcode)))
+        ((= op 4) (incf p 2) (push x outputbuffer) (intcode))
+        ((= op 99) (store nil nil)))
 )
 
 (defun immediatecheck (v x pos)
