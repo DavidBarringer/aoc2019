@@ -28,7 +28,7 @@
         ((equal (CAR m) test) (incf orbitalsum depth) (addorbital m val))
         (t (remove nil (loop for i from 0 to (list-length m) collect (addchild test (getchild m i) val (+ depth 1)))))))
 
-(defun run()
+(defun run ()
   (setq orbitalsum 0)
   (setq chart `("COM"))
   (makelist)

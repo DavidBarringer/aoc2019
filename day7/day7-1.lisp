@@ -12,8 +12,7 @@
         ((= op 6) (incf p 3) (jumpf x y))
         ((= op 7) (incf p 4) (store (check `< x y) (CADDDR v)))
         ((= op 8) (incf p 4) (store (check `= x y) (CADDDR v)))
-        ((= op 99) (store nil nil)))
-)
+        ((= op 99) (store nil nil))))
 
 (defun all-permutations (list)
   (cond ((null list) nil)
@@ -27,8 +26,7 @@
 ; )
 
 (defun check (f x y)
-  (if (funcall f x y) 1 0)
-)
+  (if (funcall f x y) 1 0))
 
 (defun jumpt (x y)
   (cond ((= 0 x) (intcode))
@@ -41,12 +39,10 @@
 )
 
 (defun immediatecheck (v x pos)
-  (if (null x) (CAR (nthcdr pos v)) (loc (CAR (nthcdr pos v))))
-)
+  (if (null x) (CAR (nthcdr pos v)) (loc (CAR (nthcdr pos v)))))
 
 (defun tonum (x)
-  (parse-integer (format nil "~{~A~}" x))
-)
+  (parse-integer (format nil "~{~A~}" x)))
 
 (defun immediatetoop (v)
   (setq instruction (numtolist (CAR v)))
@@ -54,25 +50,20 @@
   (setq op (tonum (remove 0 (last instruction 2) :test `=)))
   (setq x (immediatecheck v (= 0 (CADDR (reverse instruction))) 1))
   (setq y (immediatecheck v (= 0 (CADDDR (reverse instruction))) 2))
-  (operate op v x y)
-)
+  (operate op v x y))
 
 (defun numtolist (n)
-  (loop for c across (write-to-string n) collect (digit-char-p c))
-)
+  (loop for c across (write-to-string n) collect (digit-char-p c)))
 
 (defun store (x loc)
   (cond ((null loc) l)
-        (t (setf (nth loc l) x) (intcode)))
-)
+        (t (setf (nth loc l) x) (intcode))))
 
 (defun loc (x)
-  (if (null x) nil (CAR (nthcdr x l)))
-)
+  (if (null x) nil (CAR (nthcdr x l))))
 
 (defun intcode ()
-  (if (> p (list-length l)) l (immediatetoop (nthcdr p l)))
-)
+  (if (> p (list-length l)) l (immediatetoop (nthcdr p l))))
 
 (defun newinput (c i)
   (setq inputs (cons (CAR c) (cons i (CDR c))))
@@ -80,9 +71,7 @@
   (setq l (loop for j in (CAR (cl-csv:read-csv #P"day7/data7.csv")) collect (parse-integer j)))
   (setq p 0)
   (intcode)
-  (if (null inputs) (CAR outputbuffer) (newinput inputs (pop outputbuffer)))
-)
+  (if (null inputs) (CAR outputbuffer) (newinput inputs (pop outputbuffer))))
 
 (defun run ()
-  (apply `max (loop for c in (all-permutations `(0 1 2 3 4)) collect (newinput c 0)))
-)
+  (apply `max (loop for c in (all-permutations `(0 1 2 3 4)) collect (newinput c 0))))

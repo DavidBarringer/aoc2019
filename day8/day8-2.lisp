@@ -6,8 +6,8 @@
 
 (defun getpixel (l r c)
   (setq pixel (nth c (nth r (nth l image))))
-  (cond ((= pixel 0) "█")
-        ((= pixel 1) " ")
+  (cond ((= pixel 0) " ")
+        ((= pixel 1) "█")
         ((= pixel 2) (getpixel (+ l 1) r c))))
 
 (defun getimage ()
