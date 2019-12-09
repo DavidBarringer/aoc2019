@@ -26,26 +26,29 @@
   (cond ((= 0 x) (setq p y) (intcode))
         (t (intcode))))
 
+; increases the memory given to the machine, returning the result if the memory exists
+; if the value is going to be stored at the position, return the position, not the value at position
 (defun memcheck (pos s)
-  (cond ((> pos (list-length l)) (nconc l (make-list (- (+ pos 1) (list-length l)) :initial-element 0))
-                                 (memcheck pos s))
+  (cond ((> (+ pos 1) (list-length l)) (nconc l (make-list (- (+ pos 1) (list-length l)) :initial-element 0))
+                                       (memcheck pos s))
         ((null s) (loc pos))
         (t pos)))
 
 (defun modecheck (v x pos s)
-  (cond ((= x 0) (memcheck (CAR (nthcdr pos v)) s))
-        ((= x 1) (CAR (nthcdr pos v)))
-        ((= x 2) (memcheck (+ rbase (CAR (nthcdr pos v))) s))))
+  (cond ((= x 0) (memcheck (nth pos v) s))
+        ((= x 1) (nth pos v))
+        ((= x 2) (memcheck (+ rbase (nth pos v)) s))))
 
 (defun immediatetoop (v)
   (setq instruction (numtolist (CAR v)))
   (loop for i from (list-length instruction) to 5 do (push 0 instruction))
-  (setq op (tonum (remove 0 (last instruction 2) :test `=)))
-  (setq x (CADDR (reverse instruction)))
-  (setq y (CADDDR (reverse instruction)))
-  (setq z (nth 4 (reverse instruction)))
+  (setq op (tonum (last instruction 2)))
+  (setq x (CADDDR instruction))
+  (setq y (CADDR instruction))
+  (setq z (CADR instruction))
   (operate op v x y z))
 
+; same as old store, but with memory increasing
 (defun store (x pos)
   (cond ((null pos) l)
         ((> (+ pos 1) (list-length l)) (nconc l (make-list (- (+ pos 1) (list-length l)) :initial-element 0))
@@ -53,7 +56,7 @@
         (t (setf (nth pos l) x) (intcode))))
 
 (defun loc (x)
-  (if (null x) nil (CAR (nthcdr x l))))
+  (if (null x) nil (nth x l)))
 
 (defun intcode ()
   (if (> p (list-length l)) l (immediatetoop (nthcdr p l))))

@@ -5,6 +5,11 @@
 (defvar oldlength)
 (defvar oginput)
 
+; Incredibly bad solution, terminates a machine if there are no available inputs
+; runs next machine with full output buffer as inputs
+; does this until outputbuffer stops increasing in length
+; No further comment.
+
 (defun operate (op v x y)
   (cond ((= op 1) (incf p 4) (store (+ x y) (CADDDR v)))
         ((= op 2) (incf p 4) (store (* x y) (CADDDR v)))
@@ -31,8 +36,7 @@
 
 (defun jumpt (x y)
   (cond ((= 0 x) (intcode))
-        (t (setq p y) (intcode)))
-)
+        (t (setq p y) (intcode))))
 
 (defun jumpf (x y)
   (cond ((= 0 x) (setq p y) (intcode))
@@ -40,9 +44,6 @@
 
 (defun immediatecheck (v x pos)
   (if (null x) (CAR (nthcdr pos v)) (loc (CAR (nthcdr pos v)))))
-
-(defun tonum (x)
-  (parse-integer (format nil "~{~A~}" x)))
 
 (defun immediatetoop (v)
   (setq instruction (numtolist (CAR v)))

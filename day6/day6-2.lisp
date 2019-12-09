@@ -1,3 +1,5 @@
+; returns the path from "COM" to test
+; actually makes a path to each node, discarding path if it reaches a leaf without seeing test
 (defun pathto (test m path)
   (cond ((atom m) nil)
         ((equal (CAR m) test) path)

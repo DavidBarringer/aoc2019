@@ -11,66 +11,43 @@
         ((= op 6) (incf p 3) (jumpf x y))
         ((= op 7) (incf p 4) (store (check `< x y) (CADDDR v)))
         ((= op 8) (incf p 4) (store (check `= x y) (CADDDR v)))
-        ((= op 99) (store nil nil)))
-)
-
-(defun input (pos)
-  (setq i (read))
-  (store i pos)
-)
+        ((= op 99) (store nil nil))))
 
 (defun check (f x y)
-  (if (funcall f x y) 1 0)
-)
+  (if (funcall f x y) 1 0))
 
 (defun jumpt (x y)
   (cond ((= 0 x) (intcode))
-        (t (setq p y) (intcode)))
-)
+        (t (setq p y) (intcode))))
 
 (defun jumpf (x y)
   (cond ((= 0 x) (setq p y) (intcode))
-        (t (intcode)))
-)
+        (t (intcode))))
 
 (defun immediatecheck (v x pos)
-  (if (null x) (CAR (nthcdr pos v)) (loc (CAR (nthcdr pos v))))
-)
-
-(defun tonum (x)
-  (parse-integer (format nil "~{~A~}" x))
-)
+  (if (null x) (nth pos v) (loc (nth pos v))))
 
 (defun immediatetoop (v)
   (setq instruction (numtolist (CAR v)))
   (loop for i from (list-length instruction) to 5 do(push 0 instruction))
-  (setq op (tonum (remove 0 (last instruction 2) :test `=)))
-  (setq x (immediatecheck v (= 0 (CADDR (reverse instruction))) 1))
-  (setq y (immediatecheck v (= 0 (CADDDR (reverse instruction))) 2))
-  (operate op v x y)
-)
-
-(defun numtolist (n)
-  (loop for c across (write-to-string n) collect (digit-char-p c))
-)
+  (setq op (tonum (last instruction 2)))
+  (setq x (immediatecheck v (= 0 (CADDDR instruction)) 1))
+  (setq y (immediatecheck v (= 0 (CADDR instruction)) 2))
+  (operate op v x y))
 
 (defun store (x loc)
   (cond ((null loc) l)
-        (t (setf (nth loc l) x) (intcode)))
-)
+        (t (setf (nth loc l) x) (intcode))))
 
 (defun loc (x)
-  (if (null x) nil (CAR (nthcdr x l)))
-)
+  (if (null x) nil (nth x l)))
 
 (defun intcode ()
-  (if (> p (list-length l)) l (immediatetoop (nthcdr p l)))
-)
+  (if (> p (list-length l)) l (immediatetoop (nthcdr p l))))
 
 (defun run2 ()
   (setq outputbuffer `())
   (setq p 0)
   (setq l (loop for j in (CAR (cl-csv:read-csv #P"day5/data5.csv")) collect (parse-integer j)))
   (intcode)
-  (reverse outputbuffer)
-)
+  (reverse outputbuffer))
